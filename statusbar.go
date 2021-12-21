@@ -44,6 +44,7 @@ func (s *Statusbar) Show() {
 	}
 
 	s.app.grid.Add(s.gtkStatusBar)
+	s.app.grid.ShowAll()
 }
 
 func (s *Statusbar) Hide() {
@@ -52,4 +53,5 @@ func (s *Statusbar) Hide() {
 	}
 
 	s.app.grid.Remove(s.gtkStatusBar)
+	s.app.grid.ShowAll()
 }

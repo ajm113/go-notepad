@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
 
 	"github.com/gotk3/gotk3/gtk"
@@ -8,7 +9,7 @@ import (
 
 type TextView struct {
 	app         *App
-	gtktextView *gtk.TextView
+	GTKtextView *gtk.TextView
 }
 
 func NewTextView(app *App) *TextView {
@@ -36,63 +37,98 @@ func NewTextView(app *App) *TextView {
 
 	return &TextView{
 		app:         app,
-		gtktextView: textView,
+		GTKtextView: textView,
 	}
 }
 
 func (t *TextView) SetText(text string) {
-	b, _ := t.gtktextView.GetBuffer()
+	b, _ := t.GTKtextView.GetBuffer()
 	b.SetText(text)
 }
 
 func (t *TextView) WrapText(wrap bool) {
 	if wrap {
-		t.gtktextView.SetWrapMode(gtk.WRAP_WORD)
+		t.GTKtextView.SetWrapMode(gtk.WRAP_WORD)
 	} else {
-		t.gtktextView.SetWrapMode(gtk.WRAP_NONE)
+		t.GTKtextView.SetWrapMode(gtk.WRAP_NONE)
 	}
 }
 
 func (t *TextView) Copy() {
 
-	b, _ := t.gtktextView.GetBuffer()
+	b, _ := t.GTKtextView.GetBuffer()
 
-	if !t.gtktextView.IsFocus() || !b.GetHasSelection() {
+	if !t.GTKtextView.IsFocus() || !b.GetHasSelection() {
 		return
 	}
 
-	t.gtktextView.Emit("copy-clipboard")
+	t.GTKtextView.Emit("copy-clipboard")
 }
 
 func (t *TextView) Cut() {
-	b, _ := t.gtktextView.GetBuffer()
-	if !t.gtktextView.IsFocus() || !b.GetHasSelection() {
+	b, _ := t.GTKtextView.GetBuffer()
+	if !t.GTKtextView.IsFocus() || !b.GetHasSelection() {
 		return
 	}
 
-	t.gtktextView.Emit("cut-clipboard")
+	t.GTKtextView.Emit("cut-clipboard")
 }
 
 func (t *TextView) Paste() {
-	if !t.gtktextView.IsFocus() {
+	if !t.GTKtextView.IsFocus() {
 		return
 	}
 
-	t.gtktextView.Emit("paste-clipboard")
+	t.GTKtextView.Emit("paste-clipboard")
 }
 
 func (t *TextView) SelectAll() {
-	if !t.gtktextView.IsFocus() {
+	if !t.GTKtextView.IsFocus() {
 		return
 	}
 
-	t.gtktextView.Emit("select-all")
+	t.GTKtextView.Emit("select-all")
 }
 
 func (t *TextView) Backspace() {
-	if !t.gtktextView.IsFocus() {
+	if !t.GTKtextView.IsFocus() {
 		return
 	}
 
-	t.gtktextView.Emit("backspace")
+	t.GTKtextView.Emit("backspace")
+}
+
+func (t *TextView) LoadSource(filename string) (err error) {
+	src, err := ioutil.ReadFile(filename)
+
+	if err != nil {
+		return
+	}
+
+	buff, err := t.GTKtextView.GetBuffer()
+
+	if err != nil {
+		return
+	}
+
+	t.Clear()
+	buff.Insert(buff.GetStartIter(), string(src))
+
+	return
+}
+
+func (t *TextView) SaveSource(filename string) (err error) {
+	buff, _ := t.GTKtextView.GetBuffer()
+
+	source, err := buff.GetText(buff.GetStartIter(), buff.GetEndIter(), true)
+
+	err = ioutil.WriteFile(filename, []byte(source), 0666)
+
+	return
+}
+
+func (t *TextView) Clear() {
+	buff, _ := t.GTKtextView.GetBuffer()
+
+	buff.Delete(buff.GetStartIter(), buff.GetEndIter())
 }

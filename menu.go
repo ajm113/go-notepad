@@ -6,9 +6,30 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-func (app *App) setupMenu(grid *gtk.Grid) {
+type (
+	Menu struct {
+		app        *App
+		gtkmenuBar *gtk.MenuBar
+
+		newMenuItem    *gtk.MenuItem
+		openMenuItem   *gtk.MenuItem
+		saveMenuItem   *gtk.MenuItem
+		saveAsMenuItem *gtk.MenuItem
+
+		undoMenuItem   *gtk.MenuItem
+		cutMenuItem    *gtk.MenuItem
+		copyMenuItem   *gtk.MenuItem
+		pasteMenuItem  *gtk.MenuItem
+		deleteMenuItem *gtk.MenuItem
+
+		wordWrapMenuItem  *gtk.CheckMenuItem
+		statusBarMenuItem *gtk.CheckMenuItem
+	}
+)
+
+func NewMenu(app *App) *Menu {
 	vbox, _ := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
-	grid.Add(vbox)
+	app.grid.Add(vbox)
 
 	menubar, err := gtk.MenuBarNew()
 	if err != nil {
@@ -24,38 +45,45 @@ func (app *App) setupMenu(grid *gtk.Grid) {
 
 	app.Win.AddAccelGroup(app.accelGroup)
 
-	app.setupFileMenu(menubar)
-	app.setupEditMenu(menubar)
-	app.setupViewMenu(menubar)
-	app.setupFormatMenu(menubar)
-	app.setupHelpMenu(menubar)
+	m := &Menu{
+		app:        app,
+		gtkmenuBar: menubar,
+	}
+
+	m.setupFileMenu()
+	m.setupEditMenu()
+	m.setupViewMenu()
+	m.setupFormatMenu()
+	m.setupHelpMenu()
 
 	menubar.SetHExpand(true)
 	vbox.PackStart(menubar, true, true, 0)
+
+	return m
 }
 
-func (app *App) setupFileMenu(menubar *gtk.MenuBar) {
+func (m *Menu) setupFileMenu() {
 	fileMenu, _ := gtk.MenuNew()
 	fileMain, _ := gtk.MenuItemNewWithLabel("File")
 
-	newMi, _ := gtk.MenuItemNewWithLabel("New")
+	m.newMenuItem, _ = gtk.MenuItemNewWithLabel("New")
 	key, mod := gtk.AcceleratorParse("<Control>N")
-	newMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	m.newMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
-	openMi, _ := gtk.MenuItemNewWithLabel("Open...")
+	m.openMenuItem, _ = gtk.MenuItemNewWithLabel("Open...")
 	key, mod = gtk.AcceleratorParse("<Control>O")
-	openMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	m.openMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
-	saveMi, _ := gtk.MenuItemNewWithLabel("Save")
+	m.saveMenuItem, _ = gtk.MenuItemNewWithLabel("Save")
 	key, mod = gtk.AcceleratorParse("<Control>S")
-	saveMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	m.saveMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
-	saveAsMi, _ := gtk.MenuItemNewWithLabel("Save As...")
+	m.saveAsMenuItem, _ = gtk.MenuItemNewWithLabel("Save As...")
 
 	pageSetupMi, _ := gtk.MenuItemNewWithLabel("Page Setup...")
 	printMi, _ := gtk.MenuItemNewWithLabel("Print...")
 	key, mod = gtk.AcceleratorParse("<Control>P")
-	printMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	printMi.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
 	exitMi, _ := gtk.MenuItemNewWithLabel("Exit")
 
@@ -63,95 +91,95 @@ func (app *App) setupFileMenu(menubar *gtk.MenuBar) {
 	sepMi2, _ := gtk.SeparatorMenuItemNew()
 
 	fileMain.SetSubmenu(fileMenu)
-	fileMenu.Append(newMi)
-	fileMenu.Append(openMi)
-	fileMenu.Append(saveMi)
-	fileMenu.Append(saveAsMi)
+	fileMenu.Append(m.newMenuItem)
+	fileMenu.Append(m.openMenuItem)
+	fileMenu.Append(m.saveMenuItem)
+	fileMenu.Append(m.saveAsMenuItem)
 	fileMenu.Append(sepMi1)
 	fileMenu.Append(pageSetupMi)
 	fileMenu.Append(printMi)
 	fileMenu.Append(sepMi2)
 	fileMenu.Append(exitMi)
 
-	menubar.Append(fileMain)
+	m.gtkmenuBar.Append(fileMain)
 
 	exitMi.Connect("button-press-event", func() {
-		app.Win.Emit("destroy")
+		m.app.Win.Emit("destroy")
 	})
 
 }
 
-func (app *App) setupEditMenu(menubar *gtk.MenuBar) {
+func (m *Menu) setupEditMenu() {
 	editMenu, _ := gtk.MenuNew()
 	editMain, _ := gtk.MenuItemNewWithLabel("Edit")
 
-	undoMi, _ := gtk.MenuItemNewWithLabel("Undo")
+	m.undoMenuItem, _ = gtk.MenuItemNewWithLabel("Undo")
 	key, mod := gtk.AcceleratorParse("<Control>Z")
-	undoMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	m.undoMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
 	sepMi1, _ := gtk.SeparatorMenuItemNew()
-	cutMi, _ := gtk.MenuItemNewWithLabel("Cut")
+	m.cutMenuItem, _ = gtk.MenuItemNewWithLabel("Cut")
 	key, mod = gtk.AcceleratorParse("<Control>X")
-	cutMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
-	cutMi.Connect("activate", func() {
-		app.textView.Cut()
+	m.cutMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	m.cutMenuItem.Connect("activate", func() {
+		m.app.TextView.Cut()
 	})
 
-	copyMi, _ := gtk.MenuItemNewWithLabel("Copy")
+	m.copyMenuItem, _ = gtk.MenuItemNewWithLabel("Copy")
 	key, mod = gtk.AcceleratorParse("<Control>C")
-	copyMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
-	copyMi.Connect("activate", func() {
-		app.textView.Copy()
+	m.copyMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	m.copyMenuItem.Connect("activate", func() {
+		m.app.TextView.Copy()
 	})
 
-	pasteMi, _ := gtk.MenuItemNewWithLabel("Paste")
+	m.pasteMenuItem, _ = gtk.MenuItemNewWithLabel("Paste")
 	key, mod = gtk.AcceleratorParse("<Control>V")
-	pasteMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
-	pasteMi.Connect("activate", func() {
-		app.textView.Paste()
+	m.pasteMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	m.pasteMenuItem.Connect("activate", func() {
+		m.app.TextView.Paste()
 	})
 
-	deleteMi, _ := gtk.MenuItemNewWithLabel("Delete")
-	deleteMi.Connect("activate", func() {
-		app.textView.Backspace()
+	m.deleteMenuItem, _ = gtk.MenuItemNewWithLabel("Delete")
+	m.deleteMenuItem.Connect("activate", func() {
+		m.app.TextView.Backspace()
 	})
 
 	sepMi2, _ := gtk.SeparatorMenuItemNew()
 
 	findMi, _ := gtk.MenuItemNewWithLabel("Find...")
 	key, mod = gtk.AcceleratorParse("<Control>F")
-	findMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	findMi.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
 	findNextMi, _ := gtk.MenuItemNewWithLabel("Find Next")
 	key, mod = gtk.AcceleratorParse("F3")
-	findNextMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	findNextMi.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
 	replaceMi, _ := gtk.MenuItemNewWithLabel("Replace...")
 	key, mod = gtk.AcceleratorParse("<Control>H")
-	replaceMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	replaceMi.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
 	goToMi, _ := gtk.MenuItemNewWithLabel("Go To...")
 	key, mod = gtk.AcceleratorParse("<Control>G")
-	goToMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	goToMi.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
 	sepMi3, _ := gtk.SeparatorMenuItemNew()
 
 	selectAllMi, _ := gtk.MenuItemNewWithLabel("Select All")
 	key, mod = gtk.AcceleratorParse("<Control>A")
-	selectAllMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	selectAllMi.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 	selectAllMi.Connect("activate", func() {
-		app.textView.SelectAll()
+		m.app.TextView.SelectAll()
 	})
 
 	timeDateMi, _ := gtk.MenuItemNewWithLabel("Time/Date")
 
 	editMain.SetSubmenu(editMenu)
-	editMenu.Append(undoMi)
+	editMenu.Append(m.undoMenuItem)
 	editMenu.Append(sepMi1)
-	editMenu.Append(cutMi)
-	editMenu.Append(copyMi)
-	editMenu.Append(pasteMi)
-	editMenu.Append(deleteMi)
+	editMenu.Append(m.cutMenuItem)
+	editMenu.Append(m.copyMenuItem)
+	editMenu.Append(m.pasteMenuItem)
+	editMenu.Append(m.deleteMenuItem)
 	editMenu.Append(sepMi2)
 
 	editMenu.Append(findMi)
@@ -162,45 +190,51 @@ func (app *App) setupEditMenu(menubar *gtk.MenuBar) {
 	editMenu.Append(selectAllMi)
 	editMenu.Append(timeDateMi)
 
-	menubar.Append(editMain)
+	m.gtkmenuBar.Append(editMain)
+
+	// Setup signals from our textView
+	m.cutMenuItem.SetSensitive(false)
+	m.copyMenuItem.SetSensitive(false)
+	m.deleteMenuItem.SetSensitive(false)
+
 }
 
-func (app *App) setupFormatMenu(menubar *gtk.MenuBar) {
+func (m *Menu) setupFormatMenu() {
 	formatMenu, _ := gtk.MenuNew()
 	formatMain, _ := gtk.MenuItemNewWithLabel("Format")
 
-	wordWrapMi, _ := gtk.MenuItemNewWithLabel("Word Wrap")
 	fontMi, _ := gtk.MenuItemNewWithLabel("Font...")
+	m.wordWrapMenuItem, _ = gtk.CheckMenuItemNewWithLabel("Word Wrap")
 
 	formatMain.SetSubmenu(formatMenu)
-	formatMenu.Append(wordWrapMi)
+	formatMenu.Append(m.wordWrapMenuItem)
 	formatMenu.Append(fontMi)
 
-	menubar.Append(formatMain)
+	m.gtkmenuBar.Append(formatMain)
 }
 
-func (app *App) setupViewMenu(menubar *gtk.MenuBar) {
+func (m *Menu) setupViewMenu() {
 	viewMenu, _ := gtk.MenuNew()
 	viewMain, _ := gtk.MenuItemNewWithLabel("View")
 
-	statusBarMi, _ := gtk.MenuItemNewWithLabel("Status Bar")
+	m.statusBarMenuItem, _ = gtk.CheckMenuItemNewWithLabel("Status Bar")
 
 	viewMain.SetSubmenu(viewMenu)
-	viewMenu.Append(statusBarMi)
+	viewMenu.Append(m.statusBarMenuItem)
 
-	menubar.Append(viewMain)
+	m.gtkmenuBar.Append(viewMain)
 }
 
-func (app *App) setupHelpMenu(menubar *gtk.MenuBar) {
+func (m *Menu) setupHelpMenu() {
 	helpMenu, _ := gtk.MenuNew()
 	helpMain, _ := gtk.MenuItemNewWithLabel("Help")
 
 	aboutMi, _ := gtk.MenuItemNewWithLabel("About")
 	key, mod := gtk.AcceleratorParse("F1")
-	aboutMi.AddAccelerator("activate", app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	aboutMi.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
 	helpMain.SetSubmenu(helpMenu)
 	helpMenu.Append(aboutMi)
 
-	menubar.Append(helpMain)
+	m.gtkmenuBar.Append(helpMain)
 }
