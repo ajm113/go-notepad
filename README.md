@@ -13,6 +13,7 @@ Windows XP inspired notepad written in Go using GTK
 
 * Add time and date insert.
 * Add Font selection.
+* Get default font size/family/type from legacy Notepad on Win XP.
 * Improve error/dialog messages to match Win XP Notepad.
 * Add Find/Replace
 * Add Go To Line.
@@ -22,3 +23,4 @@ Windows XP inspired notepad written in Go using GTK
 * Emulate About dialog.
 * Improve makefile for crossplatform support.
 * Add GH workflows for automated deploys.
+
