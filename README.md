@@ -20,3 +20,5 @@ Windows XP inspired notepad written in Go using GTK
 * Save prefences to `.config/`...?
 * Drag/drop files?
 * Emulate About dialog.
+* Improve makefile for crossplatform support.
+* Add GH workflows for automated deploys.
