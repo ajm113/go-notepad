@@ -9,8 +9,9 @@ Windows XP inspired notepad written in Go using GTK
 * Word Wrap!
 * WIP Status Bar
 
-## TODO
+## TODO or Citation Needed
 
+* Add time and date insert.
 * Add Font selection.
 * Improve error/dialog messages to match Win XP Notepad.
 * Add Find/Replace
