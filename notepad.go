@@ -48,12 +48,11 @@ func (app *App) LoadFile(filename string) {
 	err := app.TextView.LoadSource(filename)
 
 	if err != nil {
-		d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "%s:%s", "unexpected error", err)
-		d.Show()
-
-		d.Connect("response", func() {
-			d.Close()
-		})
+		d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "")
+		d.FormatSecondaryText("Unexpected error saving file: %s", err)
+		d.SetTitle(AppName)
+		d.Run()
+		d.Destroy()
 	}
 
 	app.hasChanges = false
@@ -125,8 +124,9 @@ func (app *App) SetupEvents() {
 
 	app.menu.newMenuItem.Connect("activate", func() {
 		if app.hasChanges {
-			d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, "%s", AppName)
+			d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, "")
 			d.FormatSecondaryText("You are about to discard unsaved changes! Are you sure you wish to continue?")
+			d.SetTitle(AppName)
 			response := d.Run()
 			d.Destroy()
 
@@ -151,8 +151,9 @@ func (app *App) SetupEvents() {
 
 		if response == int(gtk.RESPONSE_ACCEPT) {
 			if fileExist(filename) {
-				d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK_CANCEL, "%s", "You Are About to Overwrite a File")
+				d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK_CANCEL, "")
 				d.FormatSecondaryText("You are about to write to a already saved file! Are you sure you wish to do this?")
+				d.SetTitle(AppName)
 				response := d.Run()
 				d.Destroy()
 
@@ -214,8 +215,9 @@ func main() {
 
 	app.Win.Connect("delete-event", func() bool {
 		if app.hasChanges {
-			d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "%s", AppName)
+			d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "")
 			d.FormatSecondaryText("Do you want to save changes to " + app.openedFilename + "?")
+			d.SetTitle(AppName)
 			response := d.Run()
 			d.Destroy()
 
