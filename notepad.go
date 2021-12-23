@@ -125,7 +125,7 @@ func (app *App) SetupEvents() {
 
 	app.menu.newMenuItem.Connect("activate", func() {
 		if app.hasChanges {
-			d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, "%s", "Are you sure you want a new document?")
+			d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, "%s", AppName)
 			d.FormatSecondaryText("You are about to discard unsaved changes! Are you sure you wish to continue?")
 			response := d.Run()
 			d.Destroy()
@@ -211,6 +211,25 @@ func main() {
 	if err != nil {
 		log.Fatal("failed creating window:", err)
 	}
+
+	app.Win.Connect("delete-event", func() bool {
+		if app.hasChanges {
+			d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "%s", AppName)
+			d.FormatSecondaryText("Do you want to save changes to " + app.openedFilename + "?")
+			response := d.Run()
+			d.Destroy()
+
+			switch response {
+			case gtk.RESPONSE_NO, gtk.RESPONSE_DELETE_EVENT:
+				return false
+			case gtk.RESPONSE_YES:
+				app.menu.saveMenuItem.Emit("activate")
+				return true
+			}
+		}
+
+		return false
+	})
 
 	app.Win.Connect("destroy", func() {
 		gtk.MainQuit()
