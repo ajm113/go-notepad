@@ -30,7 +30,7 @@ func displayGotoLine(app *app) (response gtk.ResponseType, line string) {
 
 	b.PackStart(label, true, true, 0)
 	b.PackStart(input, true, true, 0)
-	// d.Add(label)
+
 	d.AddButton("Go To", gtk.RESPONSE_OK)
 	d.AddButton("Cancel", gtk.RESPONSE_CANCEL)
 	d.ShowAll()

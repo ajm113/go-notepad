@@ -29,6 +29,8 @@ type (
 		statusBarMenuItem *gtk.CheckMenuItem
 
 		fontMenuItem *gtk.MenuItem
+
+		aboutMenuItem *gtk.MenuItem
 	}
 )
 
@@ -239,12 +241,12 @@ func (m *menu) setupHelpMenu() {
 	helpMenu, _ := gtk.MenuNew()
 	helpMain, _ := gtk.MenuItemNewWithLabel("Help")
 
-	aboutMi, _ := gtk.MenuItemNewWithLabel("About")
+	m.aboutMenuItem, _ = gtk.MenuItemNewWithLabel("About")
 	key, mod := gtk.AcceleratorParse("F1")
-	aboutMi.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	m.aboutMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
 	helpMain.SetSubmenu(helpMenu)
-	helpMenu.Append(aboutMi)
+	helpMenu.Append(m.aboutMenuItem)
 
 	m.gtkmenuBar.Append(helpMain)
 }

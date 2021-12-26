@@ -228,6 +228,10 @@ func (a *app) SetupEvents() {
 	a.accelGroup.Connect(gdk.KEY_W, gdk.CONTROL_MASK, 0, func() {
 		a.Win.Close()
 	})
+
+	a.menu.aboutMenuItem.Connect("activate", func() {
+		displayAboutDialog(a)
+	})
 }
 
 func main() {
