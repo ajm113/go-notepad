@@ -18,7 +18,6 @@ Windows XP inspired notepad written in Go using GTK
 * Add Find/Replace
 * Add Go To Line.
 * Add print functionality.
-* Save prefences to `.config/`...?
 * Drag/drop files?
 * Emulate About dialog.
 * Improve makefile for crossplatform support.
