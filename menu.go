@@ -15,6 +15,7 @@ type (
 		openMenuItem   *gtk.MenuItem
 		saveMenuItem   *gtk.MenuItem
 		saveAsMenuItem *gtk.MenuItem
+		exitMenuItem   *gtk.MenuItem
 
 		undoMenuItem   *gtk.MenuItem
 		cutMenuItem    *gtk.MenuItem
@@ -24,6 +25,8 @@ type (
 
 		wordWrapMenuItem  *gtk.CheckMenuItem
 		statusBarMenuItem *gtk.CheckMenuItem
+
+		fontMenuItem *gtk.MenuItem
 	}
 )
 
@@ -85,7 +88,7 @@ func (m *Menu) setupFileMenu() {
 	key, mod = gtk.AcceleratorParse("<Control>P")
 	printMi.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
-	exitMi, _ := gtk.MenuItemNewWithLabel("Exit")
+	m.exitMenuItem, _ = gtk.MenuItemNewWithLabel("Exit")
 
 	sepMi1, _ := gtk.SeparatorMenuItemNew()
 	sepMi2, _ := gtk.SeparatorMenuItemNew()
@@ -99,14 +102,9 @@ func (m *Menu) setupFileMenu() {
 	fileMenu.Append(pageSetupMi)
 	fileMenu.Append(printMi)
 	fileMenu.Append(sepMi2)
-	fileMenu.Append(exitMi)
+	fileMenu.Append(m.exitMenuItem)
 
 	m.gtkmenuBar.Append(fileMain)
-
-	exitMi.Connect("button-press-event", func() {
-		m.app.Win.Emit("destroy")
-	})
-
 }
 
 func (m *Menu) setupEditMenu() {
@@ -203,12 +201,12 @@ func (m *Menu) setupFormatMenu() {
 	formatMenu, _ := gtk.MenuNew()
 	formatMain, _ := gtk.MenuItemNewWithLabel("Format")
 
-	fontMi, _ := gtk.MenuItemNewWithLabel("Font...")
+	m.fontMenuItem, _ = gtk.MenuItemNewWithLabel("Font...")
 	m.wordWrapMenuItem, _ = gtk.CheckMenuItemNewWithLabel("Word Wrap")
 
 	formatMain.SetSubmenu(formatMenu)
 	formatMenu.Append(m.wordWrapMenuItem)
-	formatMenu.Append(fontMi)
+	formatMenu.Append(m.fontMenuItem)
 
 	m.gtkmenuBar.Append(formatMain)
 }

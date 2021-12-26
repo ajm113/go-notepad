@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -88,6 +89,23 @@ func (app *App) SetupWindow() {
 	app.Win.ShowAll()
 }
 
+func (app *App) displayUnsavedChangesMessagedialog() (response gtk.ResponseType) {
+	d := gtk.MessageDialogNew(
+		app.Win,
+		gtk.DIALOG_DESTROY_WITH_PARENT,
+		gtk.MESSAGE_WARNING,
+		gtk.BUTTONS_YES_NO,
+		"The text in the %s file has changed.",
+		app.openedFilename,
+	)
+	d.FormatSecondaryText("Do you want to save the changes?")
+	d.SetTitle(AppName)
+	response = d.Run()
+	d.Destroy()
+
+	return
+}
+
 func (app *App) SetupEvents() {
 	tb, _ := app.TextView.GTKtextView.GetBuffer()
 	tb.Connect("mark-set", func(tb *gtk.TextBuffer, itr *gtk.TextIter) {
@@ -124,11 +142,7 @@ func (app *App) SetupEvents() {
 
 	app.menu.newMenuItem.Connect("activate", func() {
 		if app.hasChanges {
-			d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK_CANCEL, "")
-			d.FormatSecondaryText("You are about to discard unsaved changes! Are you sure you wish to continue?")
-			d.SetTitle(AppName)
-			response := d.Run()
-			d.Destroy()
+			response := app.displayUnsavedChangesMessagedialog()
 
 			if response == gtk.RESPONSE_CANCEL || response == gtk.RESPONSE_DELETE_EVENT {
 				return
@@ -197,6 +211,19 @@ func (app *App) SetupEvents() {
 			app.statusBar.Hide()
 		}
 	})
+
+	app.menu.fontMenuItem.Connect("activate", func() {
+
+	})
+
+	// Handle on-close events.
+	app.menu.exitMenuItem.Connect("activate", func() {
+		app.Win.Close()
+	})
+
+	app.accelGroup.Connect(gdk.KEY_W, gdk.CONTROL_MASK, 0, func() {
+		app.Win.Close()
+	})
 }
 
 func main() {
@@ -215,13 +242,7 @@ func main() {
 
 	app.Win.Connect("delete-event", func() bool {
 		if app.hasChanges {
-			d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "")
-			d.FormatSecondaryText("Do you want to save changes to " + app.openedFilename + "?")
-			d.SetTitle(AppName)
-			response := d.Run()
-			d.Destroy()
-
-			switch response {
+			switch app.displayUnsavedChangesMessagedialog() {
 			case gtk.RESPONSE_NO, gtk.RESPONSE_DELETE_EVENT:
 				return false
 			case gtk.RESPONSE_YES:
