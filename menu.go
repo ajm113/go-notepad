@@ -171,6 +171,8 @@ func (m *Menu) setupEditMenu() {
 	})
 
 	m.timedateMenuItem, _ = gtk.MenuItemNewWithLabel("Time/Date")
+	key, mod = gtk.AcceleratorParse("F5")
+	m.timedateMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
 	editMain.SetSubmenu(editMenu)
 	editMenu.Append(m.undoMenuItem)
