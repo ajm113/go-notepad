@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"time"
 
 	"github.com/gotk3/gotk3/gtk"
 )
@@ -131,4 +132,11 @@ func (t *TextView) Clear() {
 	buff, _ := t.GTKtextView.GetBuffer()
 
 	buff.Delete(buff.GetStartIter(), buff.GetEndIter())
+}
+
+func (t *TextView) InsertTimestamp() {
+	timestamp := time.Now().Format("1:04 PM 02/01/2006")
+
+	buff, _ := t.GTKtextView.GetBuffer()
+	buff.InsertAtCursor(timestamp)
 }

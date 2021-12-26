@@ -216,6 +216,10 @@ func (app *App) SetupEvents() {
 
 	})
 
+	app.menu.timedateMenuItem.Connect("activate", func() {
+		app.TextView.InsertTimestamp()
+	})
+
 	// Handle on-close events.
 	app.menu.exitMenuItem.Connect("activate", func() {
 		app.Win.Close()

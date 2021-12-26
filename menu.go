@@ -17,11 +17,12 @@ type (
 		saveAsMenuItem *gtk.MenuItem
 		exitMenuItem   *gtk.MenuItem
 
-		undoMenuItem   *gtk.MenuItem
-		cutMenuItem    *gtk.MenuItem
-		copyMenuItem   *gtk.MenuItem
-		pasteMenuItem  *gtk.MenuItem
-		deleteMenuItem *gtk.MenuItem
+		undoMenuItem     *gtk.MenuItem
+		cutMenuItem      *gtk.MenuItem
+		copyMenuItem     *gtk.MenuItem
+		pasteMenuItem    *gtk.MenuItem
+		deleteMenuItem   *gtk.MenuItem
+		timedateMenuItem *gtk.MenuItem
 
 		wordWrapMenuItem  *gtk.CheckMenuItem
 		statusBarMenuItem *gtk.CheckMenuItem
@@ -169,7 +170,7 @@ func (m *Menu) setupEditMenu() {
 		m.app.TextView.SelectAll()
 	})
 
-	timeDateMi, _ := gtk.MenuItemNewWithLabel("Time/Date")
+	m.timedateMenuItem, _ = gtk.MenuItemNewWithLabel("Time/Date")
 
 	editMain.SetSubmenu(editMenu)
 	editMenu.Append(m.undoMenuItem)
@@ -186,7 +187,7 @@ func (m *Menu) setupEditMenu() {
 	editMenu.Append(goToMi)
 	editMenu.Append(sepMi3)
 	editMenu.Append(selectAllMi)
-	editMenu.Append(timeDateMi)
+	editMenu.Append(m.timedateMenuItem)
 
 	m.gtkmenuBar.Append(editMain)
 
