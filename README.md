@@ -6,8 +6,11 @@ Windows XP inspired notepad written in Go using GTK
 
 Prerequisits:
 
-- Go 1.17+
-- GTK3 Dev Libraries Installed: <https://github.com/gotk3/gotk3>
+**Anything marked with * is required.**
+
+- *Go 1.17+
+- *GTK3 Dev Libraries Installed: <https://github.com/gotk3/gotk3>
+- golangci-lint: <https://github.com/golangci/golangci-lint>
 
 After Go and needed libraries are installed. You should be able to run `$ make` and see a executable.
 If not running `go build -o notepad -tags pango_1_42,gtk_3_22 .` will result the same output if you do not have Make installed for your targeted operating system.
