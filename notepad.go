@@ -46,7 +46,7 @@ func (a *app) UpdateTitle() {
 
 func (a *app) LoadFile(filename string) {
 	a.openedFilename = filename
-	err := app.textView.LoadSource(filename)
+	err := a.textView.LoadSource(filename)
 
 	if err != nil {
 		d := gtk.MessageDialogNew(a.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "")
@@ -107,7 +107,7 @@ func (a *app) displayUnsavedChangesMessagedialog() (response gtk.ResponseType) {
 }
 
 func (a *app) SetupEvents() {
-	tb, _ := a.TextView.GTKtextView.GetBuffer()
+	tb, _ := a.textView.GTKtextView.GetBuffer()
 	tb.Connect("mark-set", func(tb *gtk.TextBuffer, itr *gtk.TextIter) {
 		if tb.GetHasSelection() {
 			a.menu.cutMenuItem.SetSensitive(true)

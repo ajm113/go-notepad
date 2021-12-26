@@ -31,7 +31,7 @@ type (
 	}
 )
 
-func newMenu(app *App) *menu {
+func newMenu(app *app) *menu {
 	vbox, _ := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
 	app.grid.Add(vbox)
 
@@ -121,26 +121,26 @@ func (m *menu) setupEditMenu() {
 	key, mod = gtk.AcceleratorParse("<Control>X")
 	m.cutMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 	m.cutMenuItem.Connect("activate", func() {
-		m.app.TextView.Cut()
+		m.app.textView.Cut()
 	})
 
 	m.copyMenuItem, _ = gtk.MenuItemNewWithLabel("Copy")
 	key, mod = gtk.AcceleratorParse("<Control>C")
 	m.copyMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 	m.copyMenuItem.Connect("activate", func() {
-		m.app.TextView.Copy()
+		m.app.textView.Copy()
 	})
 
 	m.pasteMenuItem, _ = gtk.MenuItemNewWithLabel("Paste")
 	key, mod = gtk.AcceleratorParse("<Control>V")
 	m.pasteMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 	m.pasteMenuItem.Connect("activate", func() {
-		m.app.TextView.Paste()
+		m.app.textView.Paste()
 	})
 
 	m.deleteMenuItem, _ = gtk.MenuItemNewWithLabel("Delete")
 	m.deleteMenuItem.Connect("activate", func() {
-		m.app.TextView.Backspace()
+		m.app.textView.Backspace()
 	})
 
 	sepMi2, _ := gtk.SeparatorMenuItemNew()
@@ -167,7 +167,7 @@ func (m *menu) setupEditMenu() {
 	key, mod = gtk.AcceleratorParse("<Control>A")
 	selectAllMi.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 	selectAllMi.Connect("activate", func() {
-		m.app.TextView.SelectAll()
+		m.app.textView.SelectAll()
 	})
 
 	m.timedateMenuItem, _ = gtk.MenuItemNewWithLabel("Time/Date")
