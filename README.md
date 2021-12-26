@@ -31,7 +31,7 @@ Once the executable is built you should be able to run it via `./notepad` or if 
 - Get default font size/family/type from legacy Notepad on Win XP.
 - Improve error/dialog messages to match Win XP Notepad.
 - Add Find/Replace
-- Add Go To Line.
+- ~~Add Go To Line.~~
 - Add print functionality.
 - Drag/drop files?
 - Emulate About dialog.

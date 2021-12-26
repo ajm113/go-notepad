@@ -140,3 +140,8 @@ func (t *textView) InsertTimestamp() {
 	buff, _ := t.GTKtextView.GetBuffer()
 	buff.InsertAtCursor(timestamp)
 }
+
+func (t *textView) GoToLine(i int) {
+	buff, _ := t.GTKtextView.GetBuffer()
+	buff.PlaceCursor(buff.GetIterAtLine(i))
+}

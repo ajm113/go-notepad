@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"strconv"
 
 	"github.com/gotk3/gotk3/gtk"
 )
@@ -160,6 +161,14 @@ func (m *menu) setupEditMenu() {
 	goToMi, _ := gtk.MenuItemNewWithLabel("Go To...")
 	key, mod = gtk.AcceleratorParse("<Control>G")
 	goToMi.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	goToMi.Connect("activate", func() {
+		response, line := displayGotoLine(m.app)
+
+		if response == gtk.RESPONSE_OK {
+			i, _ := strconv.ParseInt(line, 10, 64)
+			m.app.textView.GoToLine(int(i - 1))
+		}
+	})
 
 	sepMi3, _ := gtk.SeparatorMenuItemNew()
 
