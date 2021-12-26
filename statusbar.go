@@ -7,13 +7,13 @@ import (
 )
 
 type (
-	Statusbar struct {
-		app          *App
+	statusbar struct {
+		app          *app
 		gtkStatusBar *gtk.Statusbar
 	}
 )
 
-func NewStatusbar(app *App) (statusbar *Statusbar) {
+func newStatusbar(app *app) *statusbar {
 
 	// Define statusbar
 	gtkstatusBar, err := gtk.StatusbarNew()
@@ -26,19 +26,17 @@ func NewStatusbar(app *App) (statusbar *Statusbar) {
 
 	msgArea.SetHAlign(gtk.ALIGN_END)
 
-	statusbar = &Statusbar{
+	return &statusbar{
 		app:          app,
 		gtkStatusBar: gtkstatusBar,
 	}
-
-	return
 }
 
-func (s *Statusbar) SetText(text string) {
+func (s *statusbar) SetText(text string) {
 	s.gtkStatusBar.Push(s.gtkStatusBar.GetContextId("textView cursor position"), text)
 }
 
-func (s *Statusbar) Show() {
+func (s *statusbar) Show() {
 	if s.app == nil || s.app.grid == nil {
 		return
 	}
@@ -47,7 +45,7 @@ func (s *Statusbar) Show() {
 	s.app.grid.ShowAll()
 }
 
-func (s *Statusbar) Hide() {
+func (s *statusbar) Hide() {
 	if s.app == nil || s.app.grid == nil {
 		return
 	}

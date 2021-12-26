@@ -7,8 +7,8 @@ import (
 )
 
 type (
-	Menu struct {
-		app        *App
+	menu struct {
+		app        *app
 		gtkmenuBar *gtk.MenuBar
 
 		newMenuItem    *gtk.MenuItem
@@ -31,7 +31,7 @@ type (
 	}
 )
 
-func NewMenu(app *App) *Menu {
+func newMenu(app *App) *menu {
 	vbox, _ := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
 	app.grid.Add(vbox)
 
@@ -49,7 +49,7 @@ func NewMenu(app *App) *Menu {
 
 	app.Win.AddAccelGroup(app.accelGroup)
 
-	m := &Menu{
+	m := &menu{
 		app:        app,
 		gtkmenuBar: menubar,
 	}
@@ -66,7 +66,7 @@ func NewMenu(app *App) *Menu {
 	return m
 }
 
-func (m *Menu) setupFileMenu() {
+func (m *menu) setupFileMenu() {
 	fileMenu, _ := gtk.MenuNew()
 	fileMain, _ := gtk.MenuItemNewWithLabel("File")
 
@@ -108,7 +108,7 @@ func (m *Menu) setupFileMenu() {
 	m.gtkmenuBar.Append(fileMain)
 }
 
-func (m *Menu) setupEditMenu() {
+func (m *menu) setupEditMenu() {
 	editMenu, _ := gtk.MenuNew()
 	editMain, _ := gtk.MenuItemNewWithLabel("Edit")
 
@@ -200,7 +200,7 @@ func (m *Menu) setupEditMenu() {
 
 }
 
-func (m *Menu) setupFormatMenu() {
+func (m *menu) setupFormatMenu() {
 	formatMenu, _ := gtk.MenuNew()
 	formatMain, _ := gtk.MenuItemNewWithLabel("Format")
 
@@ -214,7 +214,7 @@ func (m *Menu) setupFormatMenu() {
 	m.gtkmenuBar.Append(formatMain)
 }
 
-func (m *Menu) setupViewMenu() {
+func (m *menu) setupViewMenu() {
 	viewMenu, _ := gtk.MenuNew()
 	viewMain, _ := gtk.MenuItemNewWithLabel("View")
 
@@ -226,7 +226,7 @@ func (m *Menu) setupViewMenu() {
 	m.gtkmenuBar.Append(viewMain)
 }
 
-func (m *Menu) setupHelpMenu() {
+func (m *menu) setupHelpMenu() {
 	helpMenu, _ := gtk.MenuNew()
 	helpMain, _ := gtk.MenuItemNewWithLabel("Help")
 

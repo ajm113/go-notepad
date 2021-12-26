@@ -11,14 +11,14 @@ import (
 )
 
 const (
-	AppName             string = "Notepad"
-	DefaultFilename            = "Untitled"
-	DefaultWindowWidth  int    = 900
-	DefaultWindowHeight int    = 500
+	appName             string = "Notepad"
+	defaultFilename            = "Untitled"
+	defaultWindowWidth  int    = 900
+	defaultWindowHeight int    = 500
 )
 
 type (
-	App struct {
+	app struct {
 		openedFilename  string
 		hasChanges      bool
 		isFileOpened    bool
@@ -26,138 +26,138 @@ type (
 		lineOffsetCount int
 
 		Win        *gtk.Window
-		TextView   *TextView
-		menu       *Menu
+		textView   *textView
+		menu       *menu
 		accelGroup *gtk.AccelGroup
-		statusBar  *Statusbar
+		statusBar  *statusbar
 		grid       *gtk.Grid
 	}
 )
 
-func (app *App) UpdateTitle() {
-	title := filepath.Base(app.openedFilename) + " - " + AppName
+func (a *app) UpdateTitle() {
+	title := filepath.Base(a.openedFilename) + " - " + appName
 
-	if app.hasChanges {
+	if a.hasChanges {
 		title = "*" + title
 	}
 
-	app.Win.SetTitle(title)
+	a.Win.SetTitle(title)
 }
 
-func (app *App) LoadFile(filename string) {
-	app.openedFilename = filename
-	err := app.TextView.LoadSource(filename)
+func (a *app) LoadFile(filename string) {
+	a.openedFilename = filename
+	err := app.textView.LoadSource(filename)
 
 	if err != nil {
-		d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "")
+		d := gtk.MessageDialogNew(a.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "")
 		d.FormatSecondaryText("Unexpected error saving file: %s", err)
-		d.SetTitle(AppName)
+		d.SetTitle(appName)
 		d.Run()
 		d.Destroy()
 	}
 
-	app.hasChanges = false
-	app.isFileOpened = true
-	app.UpdateTitle()
+	a.hasChanges = false
+	a.isFileOpened = true
+	a.UpdateTitle()
 }
 
-func (app *App) Init(args []string) {
+func (a *app) Init(args []string) {
 	if len(args) > 1 && fileExist(args[1]) {
-		app.LoadFile(args[1])
+		a.LoadFile(args[1])
 	}
 }
 
-func (app *App) SetupWindow() {
+func (a *app) SetupWindow() {
 	var err error
 
-	app.grid, err = gtk.GridNew()
+	a.grid, err = gtk.GridNew()
 	if err != nil {
 		log.Fatal("unable to create grid:", err)
 	}
 
-	app.Win.Add(app.grid)
-	app.grid.SetOrientation(gtk.ORIENTATION_VERTICAL)
+	a.Win.Add(a.grid)
+	a.grid.SetOrientation(gtk.ORIENTATION_VERTICAL)
 
-	app.menu = NewMenu(app)
-	app.TextView = NewTextView(app)
-	app.statusBar = NewStatusbar(app)
+	a.menu = newMenu(a)
+	a.textView = newTextView(a)
+	a.statusBar = newStatusbar(a)
 
-	app.UpdateTitle()
-	app.Win.SetBorderWidth(2)
-	app.Win.SetDefaultSize(DefaultWindowWidth, DefaultWindowHeight)
-	app.Win.SetPosition(gtk.WIN_POS_CENTER)
-	app.Win.ShowAll()
+	a.UpdateTitle()
+	a.Win.SetBorderWidth(2)
+	a.Win.SetDefaultSize(defaultWindowWidth, defaultWindowHeight)
+	a.Win.SetPosition(gtk.WIN_POS_CENTER)
+	a.Win.ShowAll()
 }
 
-func (app *App) displayUnsavedChangesMessagedialog() (response gtk.ResponseType) {
+func (a *app) displayUnsavedChangesMessagedialog() (response gtk.ResponseType) {
 	d := gtk.MessageDialogNew(
-		app.Win,
+		a.Win,
 		gtk.DIALOG_DESTROY_WITH_PARENT,
 		gtk.MESSAGE_WARNING,
 		gtk.BUTTONS_YES_NO,
 		"The text in the %s file has changed.",
-		app.openedFilename,
+		a.openedFilename,
 	)
 	d.FormatSecondaryText("Do you want to save the changes?")
-	d.SetTitle(AppName)
+	d.SetTitle(appName)
 	response = d.Run()
 	d.Destroy()
 
 	return
 }
 
-func (app *App) SetupEvents() {
-	tb, _ := app.TextView.GTKtextView.GetBuffer()
+func (a *app) SetupEvents() {
+	tb, _ := a.TextView.GTKtextView.GetBuffer()
 	tb.Connect("mark-set", func(tb *gtk.TextBuffer, itr *gtk.TextIter) {
 		if tb.GetHasSelection() {
-			app.menu.cutMenuItem.SetSensitive(true)
-			app.menu.copyMenuItem.SetSensitive(true)
-			app.menu.deleteMenuItem.SetSensitive(true)
+			a.menu.cutMenuItem.SetSensitive(true)
+			a.menu.copyMenuItem.SetSensitive(true)
+			a.menu.deleteMenuItem.SetSensitive(true)
 		} else {
-			app.menu.cutMenuItem.SetSensitive(false)
-			app.menu.copyMenuItem.SetSensitive(false)
-			app.menu.deleteMenuItem.SetSensitive(false)
+			a.menu.cutMenuItem.SetSensitive(false)
+			a.menu.copyMenuItem.SetSensitive(false)
+			a.menu.deleteMenuItem.SetSensitive(false)
 		}
 
-		app.lineCount = itr.GetLine() + 1
-		app.lineOffsetCount = itr.GetLineOffset()
+		a.lineCount = itr.GetLine() + 1
+		a.lineOffsetCount = itr.GetLineOffset()
 
-		if app.menu.statusBarMenuItem.GetActive() {
-			app.statusBar.SetText(fmt.Sprintf("col: %d | line: %d", app.lineOffsetCount, app.lineCount))
+		if a.menu.statusBarMenuItem.GetActive() {
+			a.statusBar.SetText(fmt.Sprintf("col: %d | line: %d", a.lineOffsetCount, a.lineCount))
 		}
 	})
 
 	tb.Connect("changed", func(tb *gtk.TextBuffer) {
-		app.hasChanges = true
-		app.UpdateTitle()
+		a.hasChanges = true
+		a.UpdateTitle()
 	})
 
-	app.menu.openMenuItem.Connect("activate", func() {
-		file := gtk.OpenFileChooserNative("Open File", app.Win)
+	a.menu.openMenuItem.Connect("activate", func() {
+		file := gtk.OpenFileChooserNative("Open File", a.Win)
 
 		if file != nil {
-			app.LoadFile(*file)
+			a.LoadFile(*file)
 		}
 	})
 
-	app.menu.newMenuItem.Connect("activate", func() {
-		if app.hasChanges {
-			response := app.displayUnsavedChangesMessagedialog()
+	a.menu.newMenuItem.Connect("activate", func() {
+		if a.hasChanges {
+			response := a.displayUnsavedChangesMessagedialog()
 
 			if response == gtk.RESPONSE_CANCEL || response == gtk.RESPONSE_DELETE_EVENT {
 				return
 			}
 		}
 
-		app.openedFilename = DefaultFilename
-		app.TextView.Clear()
-		app.hasChanges = false
-		app.isFileOpened = false
-		app.UpdateTitle()
+		a.openedFilename = defaultFilename
+		a.textView.Clear()
+		a.hasChanges = false
+		a.isFileOpened = false
+		a.UpdateTitle()
 	})
 
-	app.menu.saveAsMenuItem.Connect("activate", func() {
-		fc, _ := gtk.FileChooserNativeDialogNew("Save As...", app.Win, gtk.FILE_CHOOSER_ACTION_SAVE, "Save", "Cancel")
+	a.menu.saveAsMenuItem.Connect("activate", func() {
+		fc, _ := gtk.FileChooserNativeDialogNew("Save As...", a.Win, gtk.FILE_CHOOSER_ACTION_SAVE, "Save", "Cancel")
 		response := fc.Run()
 		fc.Destroy()
 
@@ -165,9 +165,9 @@ func (app *App) SetupEvents() {
 
 		if response == int(gtk.RESPONSE_ACCEPT) {
 			if fileExist(filename) {
-				d := gtk.MessageDialogNew(app.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK_CANCEL, "")
+				d := gtk.MessageDialogNew(a.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK_CANCEL, "")
 				d.FormatSecondaryText("You are about to write to a already saved file! Are you sure you wish to do this?")
-				d.SetTitle(AppName)
+				d.SetTitle(appName)
 				response := d.Run()
 				d.Destroy()
 
@@ -176,57 +176,57 @@ func (app *App) SetupEvents() {
 				}
 			}
 
-			app.TextView.SaveSource(filename)
-			app.openedFilename = filename
-			app.hasChanges = false
-			app.isFileOpened = true
-			app.UpdateTitle()
+			a.textView.SaveSource(filename)
+			a.openedFilename = filename
+			a.hasChanges = false
+			a.isFileOpened = true
+			a.UpdateTitle()
 		}
 	})
 
-	app.menu.saveMenuItem.Connect("activate", func() {
-		if !app.isFileOpened {
-			app.menu.saveAsMenuItem.Emit("activate")
+	a.menu.saveMenuItem.Connect("activate", func() {
+		if !a.isFileOpened {
+			a.menu.saveAsMenuItem.Emit("activate")
 			return
 		}
 
-		app.TextView.SaveSource(app.openedFilename)
-		app.hasChanges = false
-		app.UpdateTitle()
+		a.textView.SaveSource(a.openedFilename)
+		a.hasChanges = false
+		a.UpdateTitle()
 	})
 
-	app.menu.wordWrapMenuItem.Connect("activate", func() {
-		if app.menu.wordWrapMenuItem.GetActive() {
-			app.TextView.WrapText(true)
+	a.menu.wordWrapMenuItem.Connect("activate", func() {
+		if a.menu.wordWrapMenuItem.GetActive() {
+			a.textView.WrapText(true)
 		} else {
-			app.TextView.WrapText(false)
+			a.textView.WrapText(false)
 		}
 	})
 
-	app.menu.statusBarMenuItem.Connect("activate", func() {
-		if app.menu.statusBarMenuItem.GetActive() {
-			app.statusBar.Show()
-			app.statusBar.SetText(fmt.Sprintf("col: %d | line: %d", app.lineOffsetCount, app.lineCount))
+	a.menu.statusBarMenuItem.Connect("activate", func() {
+		if a.menu.statusBarMenuItem.GetActive() {
+			a.statusBar.Show()
+			a.statusBar.SetText(fmt.Sprintf("col: %d | line: %d", a.lineOffsetCount, a.lineCount))
 		} else {
-			app.statusBar.Hide()
+			a.statusBar.Hide()
 		}
 	})
 
-	app.menu.fontMenuItem.Connect("activate", func() {
+	a.menu.fontMenuItem.Connect("activate", func() {
 
 	})
 
-	app.menu.timedateMenuItem.Connect("activate", func() {
-		app.TextView.InsertTimestamp()
+	a.menu.timedateMenuItem.Connect("activate", func() {
+		a.textView.InsertTimestamp()
 	})
 
 	// Handle on-close events.
-	app.menu.exitMenuItem.Connect("activate", func() {
-		app.Win.Close()
+	a.menu.exitMenuItem.Connect("activate", func() {
+		a.Win.Close()
 	})
 
-	app.accelGroup.Connect(gdk.KEY_W, gdk.CONTROL_MASK, 0, func() {
-		app.Win.Close()
+	a.accelGroup.Connect(gdk.KEY_W, gdk.CONTROL_MASK, 0, func() {
+		a.Win.Close()
 	})
 }
 
@@ -234,8 +234,8 @@ func main() {
 	gtk.Init(nil)
 	var err error
 
-	app := &App{
-		openedFilename: DefaultFilename,
+	app := &app{
+		openedFilename: defaultFilename,
 	}
 
 	app.Win, err = gtk.WindowNew(gtk.WINDOW_TOPLEVEL)

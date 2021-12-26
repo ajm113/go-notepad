@@ -8,13 +8,13 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-type TextView struct {
-	app         *App
+type textView struct {
+	app         *app
 	GTKtextView *gtk.TextView
 }
 
-func NewTextView(app *App) *TextView {
-	textView, err := gtk.TextViewNew()
+func newTextView(app *app) *textView {
+	tv, err := gtk.TextViewNew()
 
 	if err != nil {
 		log.Fatal("failed setting up gtk textview: ", err)
@@ -33,21 +33,21 @@ func NewTextView(app *App) *TextView {
 	scrolled.SetVExpand(true)
 	scrolled.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 
-	scrolled.Add(textView)
+	scrolled.Add(tv)
 	app.grid.Add(scrolled)
 
-	return &TextView{
+	return &textView{
 		app:         app,
-		GTKtextView: textView,
+		GTKtextView: tv,
 	}
 }
 
-func (t *TextView) SetText(text string) {
+func (t *textView) SetText(text string) {
 	b, _ := t.GTKtextView.GetBuffer()
 	b.SetText(text)
 }
 
-func (t *TextView) WrapText(wrap bool) {
+func (t *textView) WrapText(wrap bool) {
 	if wrap {
 		t.GTKtextView.SetWrapMode(gtk.WRAP_WORD)
 	} else {
@@ -55,7 +55,7 @@ func (t *TextView) WrapText(wrap bool) {
 	}
 }
 
-func (t *TextView) Copy() {
+func (t *textView) Copy() {
 
 	b, _ := t.GTKtextView.GetBuffer()
 
@@ -66,7 +66,7 @@ func (t *TextView) Copy() {
 	t.GTKtextView.Emit("copy-clipboard")
 }
 
-func (t *TextView) Cut() {
+func (t *textView) Cut() {
 	b, _ := t.GTKtextView.GetBuffer()
 	if !t.GTKtextView.IsFocus() || !b.GetHasSelection() {
 		return
@@ -75,7 +75,7 @@ func (t *TextView) Cut() {
 	t.GTKtextView.Emit("cut-clipboard")
 }
 
-func (t *TextView) Paste() {
+func (t *textView) Paste() {
 	if !t.GTKtextView.IsFocus() {
 		return
 	}
@@ -83,7 +83,7 @@ func (t *TextView) Paste() {
 	t.GTKtextView.Emit("paste-clipboard")
 }
 
-func (t *TextView) SelectAll() {
+func (t *textView) SelectAll() {
 	if !t.GTKtextView.IsFocus() {
 		return
 	}
@@ -91,7 +91,7 @@ func (t *TextView) SelectAll() {
 	t.GTKtextView.Emit("select-all")
 }
 
-func (t *TextView) Backspace() {
+func (t *textView) Backspace() {
 	if !t.GTKtextView.IsFocus() {
 		return
 	}
@@ -99,7 +99,7 @@ func (t *TextView) Backspace() {
 	t.GTKtextView.Emit("backspace")
 }
 
-func (t *TextView) LoadSource(filename string) (err error) {
+func (t *textView) LoadSource(filename string) (err error) {
 	src, err := ioutil.ReadFile(filename)
 
 	if err != nil {
@@ -118,7 +118,7 @@ func (t *TextView) LoadSource(filename string) (err error) {
 	return
 }
 
-func (t *TextView) SaveSource(filename string) (err error) {
+func (t *textView) SaveSource(filename string) (err error) {
 	buff, _ := t.GTKtextView.GetBuffer()
 
 	source, err := buff.GetText(buff.GetStartIter(), buff.GetEndIter(), true)
@@ -128,13 +128,13 @@ func (t *TextView) SaveSource(filename string) (err error) {
 	return
 }
 
-func (t *TextView) Clear() {
+func (t *textView) Clear() {
 	buff, _ := t.GTKtextView.GetBuffer()
 
 	buff.Delete(buff.GetStartIter(), buff.GetEndIter())
 }
 
-func (t *TextView) InsertTimestamp() {
+func (t *textView) InsertTimestamp() {
 	timestamp := time.Now().Format("1:04 PM 02/01/2006")
 
 	buff, _ := t.GTKtextView.GetBuffer()
