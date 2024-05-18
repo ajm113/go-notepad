@@ -31,8 +31,33 @@ type (
 		accelGroup *gtk.AccelGroup
 		statusBar  *statusbar
 		grid       *gtk.Grid
+
+		config *ConfigSchema
 	}
 )
+
+func (a *app) LoadConfig() {
+	c, err := searchAndLoadConfig()
+	if err != nil {
+		d := gtk.MessageDialogNew(a.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "")
+		d.FormatSecondaryText("Unexpected error parsing config file: %s\n\nUsing defaults", err)
+		d.SetTitle(appName)
+		d.Run()
+		d.Destroy()
+
+		c = &DefaultConfig
+	}
+
+	a.config = c
+}
+
+func (a *app) updateStatusBar() {
+	if a.statusBar == nil || !a.menu.statusBarMenuItem.GetActive() {
+		return
+	}
+
+	a.statusBar.SetText(fmt.Sprintf("col: %d | line: %d", a.lineOffsetCount+1, a.lineCount))
+}
 
 func (a *app) UpdateTitle() {
 	title := filepath.Base(a.openedFilename) + " - " + appName
@@ -88,7 +113,14 @@ func (a *app) SetupWindow() {
 	a.Win.SetPosition(gtk.WIN_POS_CENTER)
 	a.Win.ShowAll()
 
-	a.textView.SetFont("Lucida Console", 10, "Regular")
+	a.textView.SetFont(a.config.Font.Family, a.config.Font.Size, a.config.Font.Style)
+
+	if a.config.StatusBar.Enable {
+		a.menu.statusBarMenuItem.SetActive(true)
+		a.statusBar.Show()
+		a.updateStatusBar()
+	}
+
 }
 
 func (a *app) displayUnsavedChangesMessagedialog() (response gtk.ResponseType) {
@@ -124,9 +156,7 @@ func (a *app) SetupEvents() {
 		a.lineCount = itr.GetLine() + 1
 		a.lineOffsetCount = itr.GetLineOffset()
 
-		if a.menu.statusBarMenuItem.GetActive() {
-			a.statusBar.SetText(fmt.Sprintf("col: %d | line: %d", a.lineOffsetCount, a.lineCount))
-		}
+		a.updateStatusBar()
 	})
 
 	tb.Connect("changed", func(tb *gtk.TextBuffer) {
@@ -208,7 +238,7 @@ func (a *app) SetupEvents() {
 	a.menu.statusBarMenuItem.Connect("activate", func() {
 		if a.menu.statusBarMenuItem.GetActive() {
 			a.statusBar.Show()
-			a.statusBar.SetText(fmt.Sprintf("col: %d | line: %d", a.lineOffsetCount, a.lineCount))
+			a.updateStatusBar()
 		} else {
 			a.statusBar.Hide()
 		}
@@ -268,6 +298,7 @@ func main() {
 		gtk.MainQuit()
 	})
 
+	app.LoadConfig()
 	app.SetupWindow()
 	app.SetupEvents()
 	app.Init(os.Args)

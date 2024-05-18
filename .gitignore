@@ -1,4 +1,6 @@
 notepad
 go-notepad
+.notepad.yml
+notepad.yml
 *.exe
 test

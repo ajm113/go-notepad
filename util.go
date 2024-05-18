@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"os"
+	"runtime"
 )
 
 func fileExist(filename string) bool {
@@ -11,4 +12,13 @@ func fileExist(filename string) bool {
 	}
 
 	return true
+}
+
+func getHomeDir() string {
+	if runtime.GOOS == "windows" {
+		homeDrive := os.Getenv("HOMEDRIVE")
+		homePath := os.Getenv("HOMEPATH")
+		return homeDrive + homePath
+	}
+	return os.Getenv("HOME")
 }
