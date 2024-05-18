@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
@@ -75,7 +76,7 @@ func (a *app) LoadFile(filename string) {
 
 	if err != nil {
 		d := gtk.MessageDialogNew(a.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "")
-		d.FormatSecondaryText("Unexpected error saving file: %s", err)
+		d.FormatSecondaryText("Unexpected error loading file: %s", err)
 		d.SetTitle(appName)
 		d.Run()
 		d.Destroy()
@@ -157,6 +158,28 @@ func (a *app) SetupEvents() {
 		a.lineOffsetCount = itr.GetLineOffset()
 
 		a.updateStatusBar()
+	})
+
+	a.textView.GTKtextView.Connect("drag-data-received", func(tv *gtk.TextView, ctx *gdk.DragContext, x, y int, data *gtk.SelectionData, info uint, time uint32) {
+		if a.hasChanges {
+			response := a.displayUnsavedChangesMessagedialog()
+
+			if response == gtk.RESPONSE_CANCEL || response == gtk.RESPONSE_DELETE_EVENT {
+				return
+			}
+		}
+
+		uris := string(data.GetData())
+		// Split by new lines to handle multiple files
+		for _, uri := range strings.Split(uris, "\n") {
+			if uri != "" {
+				filePath := strings.TrimPrefix(uri, "file://")
+				filePath = filePath[:len(filePath)-1]
+				a.LoadFile(filePath)
+				break
+			}
+		}
+
 	})
 
 	tb.Connect("changed", func(tb *gtk.TextBuffer) {

@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"time"
 
@@ -39,6 +40,13 @@ func newTextView(app *app) *textView {
 	app.grid.Add(scrolled)
 
 	tv.SetMonospace(true)
+
+	target, err := gtk.TargetEntryNew("text/uri-list", gtk.TargetFlags(0), 0)
+	if err != nil {
+		log.Fatal("failed creating target for textView", err)
+	}
+
+	tv.DragDestSet(gtk.DEST_DEFAULT_ALL, []gtk.TargetEntry{*target}, gdk.ACTION_COPY)
 
 	return &textView{
 		app:         app,
@@ -133,7 +141,7 @@ func (t *textView) Backspace() {
 }
 
 func (t *textView) LoadSource(filename string) (err error) {
-	src, err := ioutil.ReadFile(filename)
+	src, err := os.ReadFile(filename)
 
 	if err != nil {
 		return
