@@ -28,7 +28,7 @@ Once the executable is built you should be able to run it via `./notepad` or if 
 
 - ~~Add time and date insert.~~
 - Add Font selection.
-- Get default font size/family/type from legacy Notepad on Win XP.
+- ~~Get default font size/family/type from legacy Notepad on Win XP.~~
 - Improve error/dialog messages to match Win XP Notepad.
 - Add Find/Replace
 - ~~Add Go To Line.~~
@@ -40,7 +40,7 @@ Once the executable is built you should be able to run it via `./notepad` or if 
 
 ## The MIT License (MIT)
 
-Copyright © `2021-2022` `@ajm113`
+Copyright © `2021-2024` `@ajm113`
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
