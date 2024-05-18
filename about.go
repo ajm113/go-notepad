@@ -4,7 +4,7 @@ import "github.com/gotk3/gotk3/gtk"
 
 func displayAboutDialog(app *app) {
 	d, _ := gtk.DialogNew()
-	d.SetTitle("About" + appName)
+	d.SetTitle("About " + appName)
 	d.SetTransientFor(app.Win)
 	d.SetSizeRequest(350, 100)
 
@@ -27,5 +27,4 @@ func displayAboutDialog(app *app) {
 	d.Run()
 	d.Destroy()
 
-	return
 }
