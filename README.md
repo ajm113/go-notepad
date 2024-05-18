@@ -2,6 +2,16 @@
 
 Windows XP inspired notepad written in Go using GTK
 
+
+## Current Features
+
+- Simular UI layout of Win XP notepad.
+- Save/open files via terminal or UI.
+- Word Wrap!
+- Status Bar
+- Simple config
+
+
 ## Building from Source
 
 Prerequisits:
@@ -37,15 +47,6 @@ Go-notepad will look for the `.notepad.yml` in the following dirs:
 - `./.notepad.yml`
 - `~/.notepad.yml`
 - `~/config/go-notepad/notepad.yml`
-
-
-## Current Features
-
-- Simular UI layout of Win XP notepad.
-- Save/open files via terminal or UI.
-- Word Wrap!
-- Status Bar
-- Simple config
 
 ## TODO or Citation Needed
 
