@@ -3,8 +3,10 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"strconv"
 	"time"
 
+	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -36,10 +38,41 @@ func newTextView(app *app) *textView {
 	scrolled.Add(tv)
 	app.grid.Add(scrolled)
 
+	tv.SetMonospace(true)
+
 	return &textView{
 		app:         app,
 		GTKtextView: tv,
 	}
+}
+
+func (t *textView) SetFont(font string, size int64, style string) error {
+	cssProvider, err := gtk.CssProviderNew()
+	if err != nil {
+		log.Fatal("Unable to create CSS provider:", err)
+	}
+	err = cssProvider.LoadFromData(`
+        textview {
+            font-family: "` + font + `";
+            font-size: ` + strconv.FormatInt(size, 10) + `pt;
+			font-style: "` + style + `";
+		}
+    `)
+
+	if err != nil {
+		return err
+	}
+
+	// Get the default screen for the GTK application.
+	screen, err := gdk.ScreenGetDefault()
+	if err != nil {
+		log.Fatal("Unable to get default screen:", err)
+	}
+
+	// Add the CSS provider to the screen's style context.
+	gtk.AddProviderForScreen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_USER)
+
+	return nil
 }
 
 func (t *textView) SetText(text string) {

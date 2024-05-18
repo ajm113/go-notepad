@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	appName             string = "Notepad"
+	appName             string = "Go Notepad"
 	defaultFilename            = "Untitled"
 	defaultWindowWidth  int    = 900
 	defaultWindowHeight int    = 500
@@ -87,6 +87,8 @@ func (a *app) SetupWindow() {
 	a.Win.SetDefaultSize(defaultWindowWidth, defaultWindowHeight)
 	a.Win.SetPosition(gtk.WIN_POS_CENTER)
 	a.Win.ShowAll()
+
+	a.textView.SetFont("Lucida Console", 10, "Regular")
 }
 
 func (a *app) displayUnsavedChangesMessagedialog() (response gtk.ResponseType) {

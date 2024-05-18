@@ -241,7 +241,7 @@ func (m *menu) setupHelpMenu() {
 	helpMenu, _ := gtk.MenuNew()
 	helpMain, _ := gtk.MenuItemNewWithLabel("Help")
 
-	m.aboutMenuItem, _ = gtk.MenuItemNewWithLabel("About")
+	m.aboutMenuItem, _ = gtk.MenuItemNewWithLabel("About Go Notepad")
 	key, mod := gtk.AcceleratorParse("F1")
 	m.aboutMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
