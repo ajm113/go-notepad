@@ -7,15 +7,17 @@ import (
 
 func displayGotoLine(app *app) (response gtk.ResponseType, line string) {
 	d, _ := gtk.DialogNew()
-	d.SetTitle("Go to Line")
+	d.SetTitle("Goto line")
 	d.SetTransientFor(app.Win)
 	d.SetSizeRequest(300, 100)
 
 	b, _ := d.GetContentArea()
 	b.SetSpacing(5)
 	b.SetMarginTop(10)
+	b.SetMarginStart(10)
+	b.SetMarginEnd(10)
 
-	label, _ := gtk.LabelNew("Line number:")
+	label, _ := gtk.LabelNew("Line Number:")
 	label.SetHAlign(gtk.ALIGN_START)
 	input, _ := gtk.EntryNew()
 	input.Emit("set-focus")
@@ -31,7 +33,7 @@ func displayGotoLine(app *app) (response gtk.ResponseType, line string) {
 	b.PackStart(label, true, true, 0)
 	b.PackStart(input, true, true, 0)
 
-	d.AddButton("Go To", gtk.RESPONSE_OK)
+	d.AddButton("OK", gtk.RESPONSE_OK)
 	d.AddButton("Cancel", gtk.RESPONSE_CANCEL)
 	d.ShowAll()
 
