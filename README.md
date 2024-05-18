@@ -17,23 +17,46 @@ If not running `go build -o notepad -tags pango_1_42,gtk_3_22 .` will result the
 
 Once the executable is built you should be able to run it via `./notepad` or if you are on Windows ... `notepad.exe`.
 
+## Config
+
+Currently, a basic `.notepad.yml` config will look like this (more coming soon):
+
+```yml
+
+font:
+  family: ariel
+  size: 10
+  style: regular
+statusbar:
+  enable: true
+
+```
+
+Go-notepad will look for the `.notepad.yml` in the following dirs:
+
+- `./.notepad.yml`
+- `~/.notepad.yml`
+- `~/config/go-notepad/notepad.yml`
+
+
 ## Current Features
 
 - Simular UI layout of Win XP notepad.
 - Save/open files via terminal or UI.
 - Word Wrap!
-- WIP Status Bar
+- Status Bar
+- Simple config
 
 ## TODO or Citation Needed
 
 - ~~Add time and date insert.~~
-- Add Font selection.
+- Add Font selection dialog.
 - ~~Get default font size/family/type from legacy Notepad on Win XP.~~
 - Improve error/dialog messages to match Win XP Notepad.
 - Add Find/Replace
 - ~~Add Go To Line.~~
 - Add print functionality.
-- Drag/drop files?
+- Drag & drop files
 - Emulate About dialog.
 - Improve makefile for crossplatform support.
 - Add GH workflows for automated deploys.
