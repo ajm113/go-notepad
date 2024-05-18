@@ -16,7 +16,7 @@ func displayAboutDialog(app *app) {
 
 	label, _ := gtk.LabelNew("")
 	label.SetMarkup(
-		appName + "\nVersion 1.0\nMIT License 2020-2021 <a href=\"https://github.com/ajm113\">@ajm113</a>\n" +
+		appName + "\nVersion 1.0\nMIT License 2021-2024 <a href=\"https://github.com/ajm113\">@ajm113</a>\n" +
 			"Visit our <a href=\"https://github.com/ajm113/go-notepad\">GitHub Page</a> for more information or support!",
 	)
 	label.SetHAlign(gtk.ALIGN_START)
