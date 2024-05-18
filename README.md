@@ -60,6 +60,7 @@ Go-notepad will look for the `.notepad.yml` in the following dirs:
 - Emulate About dialog.
 - Improve makefile for crossplatform support.
 - Add GH workflows for automated deploys.
+- Add app icon and about banner image.
 
 ## The MIT License (MIT)
 
