@@ -41,11 +41,12 @@ Go-notepad will look for the `.notepad.yml` in the following dirs:
 
 ## Current Features
 
-- Simular UI layout of Win XP notepad.
-- Save/open files via terminal or UI.
-- Word Wrap!
+- Simular UI layout of Win XP notepad
+- Save and open files
+- Word Wrap
 - Status Bar
-- Simple config
+- Simple user config
+- Drag & Drop!
 
 ## TODO or Citation Needed
 
@@ -56,7 +57,7 @@ Go-notepad will look for the `.notepad.yml` in the following dirs:
 - Add Find/Replace
 - ~~Add Go To Line.~~
 - Add print functionality.
-- Drag & drop files
+- ~~Drag & drop files.~~
 - Emulate About dialog.
 - Improve makefile for crossplatform support.
 - Add GH workflows for automated deploys.
