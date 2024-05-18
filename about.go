@@ -6,7 +6,8 @@ func displayAboutDialog(app *app) {
 	d, _ := gtk.DialogNew()
 	d.SetTitle("About " + appName)
 	d.SetTransientFor(app.Win)
-	d.SetSizeRequest(350, 100)
+	d.SetSizeRequest(400, 400)
+	d.SetResizable(false)
 
 	b, _ := d.GetContentArea()
 	b.SetSpacing(5)
