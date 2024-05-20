@@ -26,7 +26,7 @@ Currently, a basic `.notepad.yml` config will look like this (more coming soon):
 font:
   family: ariel
   size: 10
-  style: regular
+  wrap: false
 statusbar:
   enable: true
 
