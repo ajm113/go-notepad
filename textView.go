@@ -171,15 +171,19 @@ func (t *textView) LoadSource(filename string) (err error) {
 	return
 }
 
-func (t *textView) SaveSource(filename string) (err error) {
+func (t *textView) SaveSource(filename string) error {
 	buff, _ := t.GTKtextView.GetBuffer()
 
 	// TODO: Add a write file error
 	source, err := buff.GetText(buff.GetStartIter(), buff.GetEndIter(), true)
 
+	if err != nil {
+		return err
+	}
+
 	err = os.WriteFile(filename, []byte(source), 0666)
 
-	return
+	return err
 }
 
 func (t *textView) Clear() {

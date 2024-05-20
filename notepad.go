@@ -227,7 +227,13 @@ func (a *app) SetupEvents() {
 				}
 			}
 
-			a.textView.SaveSource(filename)
+			err := a.textView.SaveSource(filename)
+
+			if err != nil {
+				a.UnexpectedErrorMessageBox("Unexpected error saving the file to disk!\n\n%s", err)
+				return
+			}
+
 			a.openedFilename = filename
 			a.hasChanges = false
 			a.isFileOpened = true
@@ -241,7 +247,12 @@ func (a *app) SetupEvents() {
 			return
 		}
 
-		a.textView.SaveSource(a.openedFilename)
+		err := a.textView.SaveSource(a.openedFilename)
+		if err != nil {
+			a.UnexpectedErrorMessageBox("Unexpected error saving the file to disk!\n\n%s", err)
+			return
+		}
+
 		a.hasChanges = false
 		a.UpdateTitle()
 	})
