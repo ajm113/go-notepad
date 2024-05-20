@@ -5,9 +5,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/gotk3/gotk3/gdk"
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -40,16 +42,19 @@ type (
 func (a *app) LoadConfig() {
 	c, err := searchAndLoadConfig()
 	if err != nil {
-		d := gtk.MessageDialogNew(a.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "")
-		d.FormatSecondaryText("Unexpected error parsing config file: %s\n\nUsing defaults", err)
-		d.SetTitle(appName)
-		d.Run()
-		d.Destroy()
-
+		a.UnexpectedErrorMessageBox("Unexpected error parsing config file: %s\n\nUsing defaults", err)
 		c = &DefaultConfig
 	}
 
 	a.config = c
+}
+
+func (a *app) UnexpectedErrorMessageBox(format string, args ...interface{}) {
+	d := gtk.MessageDialogNew(a.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "")
+	d.FormatSecondaryText(format, args...)
+	d.SetTitle(appName)
+	d.Run()
+	d.Destroy()
 }
 
 func (a *app) updateStatusBar() {
@@ -75,11 +80,7 @@ func (a *app) LoadFile(filename string) {
 	err := a.textView.LoadSource(filename)
 
 	if err != nil {
-		d := gtk.MessageDialogNew(a.Win, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "")
-		d.FormatSecondaryText("Unexpected error loading file: %s", err)
-		d.SetTitle(appName)
-		d.Run()
-		d.Destroy()
+		a.UnexpectedErrorMessageBox("Unexpected error loading file: %s\n\n%s", filename, err)
 	}
 
 	a.hasChanges = false
@@ -114,7 +115,7 @@ func (a *app) SetupWindow() {
 	a.Win.SetPosition(gtk.WIN_POS_CENTER)
 	a.Win.ShowAll()
 
-	a.textView.SetFont(a.config.Font.Family, a.config.Font.Size, a.config.Font.Style)
+	a.textView.SetFont(a.config.Font.Family, a.config.Font.Size)
 
 	if a.config.StatusBar.Enable {
 		a.menu.statusBarMenuItem.SetActive(true)
@@ -241,7 +242,7 @@ func (a *app) SetupEvents() {
 
 	a.menu.saveMenuItem.Connect("activate", func() {
 		if !a.isFileOpened {
-			a.menu.saveAsMenuItem.Emit("activate")
+			a.menu.saveAsMenuItem.Emit("activate", glib.TYPE_NONE)
 			return
 		}
 
@@ -268,6 +269,39 @@ func (a *app) SetupEvents() {
 	})
 
 	a.menu.fontMenuItem.Connect("activate", func() {
+		fd, err := gtk.FontChooserDialogNew(appName, a.Win)
+
+		if err != nil {
+			a.UnexpectedErrorMessageBox("Unexpected error creating font chooser dialog:\n\n%s", err)
+			fmt.Printf("failed creating font chooser dialog: %s\n", err)
+		}
+
+		fd.SetFont(fmt.Sprintf("%s %d", a.config.Font.Family, a.config.Font.Size))
+
+		fd.ShowAll()
+		response := fd.Run()
+
+		if response == gtk.RESPONSE_OK {
+			fontText := fd.GetFont()
+
+			fontTokens := strings.Split(fontText, " ")
+			fontSize, err := strconv.Atoi(fontTokens[len(fontTokens)-1])
+
+			if err != nil {
+				a.UnexpectedErrorMessageBox("Unexpected error extracting font size:\n\n%s", err)
+				fmt.Printf("failed selecting font: %s\n", err)
+			}
+
+			fontFamily := strings.Join(fontTokens[:len(fontTokens)-1], " ")
+			fontFamily = strings.Trim(fontFamily, ",")
+
+			err = a.textView.SetFont(fontFamily, int64(fontSize))
+			if err != nil {
+				a.UnexpectedErrorMessageBox("Unexpected error choosing font:\n\n%s", err)
+			}
+		}
+
+		fd.Destroy()
 
 	})
 
@@ -309,7 +343,7 @@ func main() {
 			case gtk.RESPONSE_NO, gtk.RESPONSE_DELETE_EVENT:
 				return false
 			case gtk.RESPONSE_YES:
-				app.menu.saveMenuItem.Emit("activate")
+				app.menu.saveMenuItem.Emit("activate", glib.TYPE_NONE)
 				return true
 			}
 		}
