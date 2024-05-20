@@ -112,6 +112,11 @@ func (a *app) SetupWindow() {
 
 	a.textView.SetFont(a.config.Font.Family, a.config.Font.Size)
 
+	if a.config.Font.Wrap {
+		a.menu.wordWrapMenuItem.SetActive(a.config.Font.Wrap)
+		a.textView.WrapText(a.config.Font.Wrap)
+	}
+
 	if a.config.StatusBar.Enable {
 		a.menu.statusBarMenuItem.SetActive(true)
 		a.statusBar.Show()
