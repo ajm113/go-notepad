@@ -51,7 +51,7 @@ Go-notepad will look for the `.notepad.yml` in the following dirs:
 ## TODO or Citation Needed
 
 - ~~Add time and date insert.~~
-- Add Font selection dialog.
+- ~~Add Font selection dialog.~~
 - ~~Get default font size/family/type from legacy Notepad on Win XP.~~
 - Improve error/dialog messages to match Win XP Notepad.
 - Add Find/Replace
