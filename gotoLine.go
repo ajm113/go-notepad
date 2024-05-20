@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gotk3/gotk3/gdk"
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -20,7 +21,7 @@ func displayGotoLine(app *app) (response gtk.ResponseType, line string) {
 	label, _ := gtk.LabelNew("Line Number:")
 	label.SetHAlign(gtk.ALIGN_START)
 	input, _ := gtk.EntryNew()
-	input.Emit("set-focus")
+	input.Emit("set-focus", glib.TYPE_NONE)
 	input.Connect("key-press-event", func(_ *gtk.Entry, e *gdk.Event) {
 		k := gdk.EventKeyNewFromEvent(e)
 

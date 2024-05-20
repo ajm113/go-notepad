@@ -19,7 +19,6 @@ var DefaultConfig = ConfigSchema{
 	Font: ConfigFont{
 		Family: "Lucida Console",
 		Size:   10,
-		Style:  "Regular",
 	},
 	StatusBar: ConfigStatusBar{
 		Enable: false,
@@ -34,7 +33,6 @@ type (
 
 	ConfigFont struct {
 		Family string
-		Style  string
 		Size   int64
 	}
 

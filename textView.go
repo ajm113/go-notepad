@@ -1,13 +1,14 @@
 package main
 
 import (
-	"io/ioutil"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"time"
 
 	"github.com/gotk3/gotk3/gdk"
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -54,31 +55,42 @@ func newTextView(app *app) *textView {
 	}
 }
 
-func (t *textView) SetFont(font string, size int64, style string) error {
+func (t *textView) SetFont(font string, size int64) error {
+	styleContext, err := t.GTKtextView.GetStyleContext()
+
+	if err != nil {
+		return err
+	}
+
 	cssProvider, err := gtk.CssProviderNew()
 	if err != nil {
-		log.Fatal("Unable to create CSS provider:", err)
+		return err
 	}
-	err = cssProvider.LoadFromData(`
-        textview {
-            font-family: "` + font + `";
-            font-size: ` + strconv.FormatInt(size, 10) + `pt;
-			font-style: "` + style + `";
-		}
-    `)
+
+	css := `
+	textview {
+		font-family: "` + font + `", "Lucida Console";
+		font-size: ` + strconv.FormatInt(size, 10) + `pt;
+	}
+	`
+
+	err = cssProvider.LoadFromData(css)
 
 	if err != nil {
 		return err
 	}
 
 	// Get the default screen for the GTK application.
-	screen, err := gdk.ScreenGetDefault()
+	screen, err := styleContext.GetScreen()
 	if err != nil {
-		log.Fatal("Unable to get default screen:", err)
+		return err
 	}
 
 	// Add the CSS provider to the screen's style context.
-	gtk.AddProviderForScreen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_USER)
+	gtk.AddProviderForScreen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+	t.GTKtextView.ShowAll()
+
+	fmt.Printf("setting font: '%s' %d\n", font, size)
 
 	return nil
 }
@@ -104,7 +116,7 @@ func (t *textView) Copy() {
 		return
 	}
 
-	t.GTKtextView.Emit("copy-clipboard")
+	t.GTKtextView.Emit("copy-clipboard", glib.TYPE_NONE)
 }
 
 func (t *textView) Cut() {
@@ -113,7 +125,7 @@ func (t *textView) Cut() {
 		return
 	}
 
-	t.GTKtextView.Emit("cut-clipboard")
+	t.GTKtextView.Emit("cut-clipboard", glib.TYPE_NONE)
 }
 
 func (t *textView) Paste() {
@@ -121,7 +133,7 @@ func (t *textView) Paste() {
 		return
 	}
 
-	t.GTKtextView.Emit("paste-clipboard")
+	t.GTKtextView.Emit("paste-clipboard", glib.TYPE_NONE)
 }
 
 func (t *textView) SelectAll() {
@@ -129,7 +141,7 @@ func (t *textView) SelectAll() {
 		return
 	}
 
-	t.GTKtextView.Emit("select-all")
+	t.GTKtextView.Emit("select-all", glib.TYPE_NONE)
 }
 
 func (t *textView) Backspace() {
@@ -137,7 +149,7 @@ func (t *textView) Backspace() {
 		return
 	}
 
-	t.GTKtextView.Emit("backspace")
+	t.GTKtextView.Emit("backspace", glib.TYPE_NONE)
 }
 
 func (t *textView) LoadSource(filename string) (err error) {
@@ -162,9 +174,10 @@ func (t *textView) LoadSource(filename string) (err error) {
 func (t *textView) SaveSource(filename string) (err error) {
 	buff, _ := t.GTKtextView.GetBuffer()
 
+	// TODO: Add a write file error
 	source, err := buff.GetText(buff.GetStartIter(), buff.GetEndIter(), true)
 
-	err = ioutil.WriteFile(filename, []byte(source), 0666)
+	err = os.WriteFile(filename, []byte(source), 0666)
 
 	return
 }
