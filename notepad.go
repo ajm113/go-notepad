@@ -67,11 +67,6 @@ func (a *app) updateStatusBar() {
 
 func (a *app) UpdateTitle() {
 	title := filepath.Base(a.openedFilename) + " - " + appName
-
-	if a.hasChanges {
-		title = "*" + title
-	}
-
 	a.Win.SetTitle(title)
 }
 
