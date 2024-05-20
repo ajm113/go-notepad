@@ -69,6 +69,8 @@ func (t *textView) SetFont(font string, size int64) error {
 
 	css := `
 	textview {
+		padding-top: 2px;
+		padding-left: 2px;
 		font-family: "` + font + `", "Lucida Console";
 		font-size: ` + strconv.FormatInt(size, 10) + `pt;
 	}
