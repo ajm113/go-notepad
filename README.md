@@ -2,6 +2,8 @@
 
 Windows XP inspired notepad written in Go using GTK
 
+![Go-Notepad](images/screenshot.png?raw=true "Go-Notepad")
+
 ## Building from Source
 
 Prerequisits:
