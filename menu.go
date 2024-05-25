@@ -16,6 +16,7 @@ type (
 		openMenuItem   *gtk.MenuItem
 		saveMenuItem   *gtk.MenuItem
 		saveAsMenuItem *gtk.MenuItem
+		printMenuItem  *gtk.MenuItem
 		exitMenuItem   *gtk.MenuItem
 
 		undoMenuItem     *gtk.MenuItem
@@ -88,9 +89,10 @@ func (m *menu) setupFileMenu() {
 	m.saveAsMenuItem, _ = gtk.MenuItemNewWithLabel("Save As...")
 
 	pageSetupMi, _ := gtk.MenuItemNewWithLabel("Page Setup...")
-	printMi, _ := gtk.MenuItemNewWithLabel("Print...")
+
+	m.printMenuItem, _ = gtk.MenuItemNewWithLabel("Print...")
 	key, mod = gtk.AcceleratorParse("<Control>P")
-	printMi.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
+	m.printMenuItem.AddAccelerator("activate", m.app.accelGroup, key, mod, gtk.ACCEL_VISIBLE)
 
 	m.exitMenuItem, _ = gtk.MenuItemNewWithLabel("Exit")
 
@@ -104,7 +106,7 @@ func (m *menu) setupFileMenu() {
 	fileMenu.Append(m.saveAsMenuItem)
 	fileMenu.Append(sepMi1)
 	fileMenu.Append(pageSetupMi)
-	fileMenu.Append(printMi)
+	fileMenu.Append(m.printMenuItem)
 	fileMenu.Append(sepMi2)
 	fileMenu.Append(m.exitMenuItem)
 

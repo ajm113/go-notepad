@@ -262,6 +262,11 @@ func (a *app) SetupEvents() {
 		a.UpdateTitle()
 	})
 
+	a.menu.printMenuItem.Connect("activate", func() {
+		tb, _ := a.textView.GTKtextView.GetBuffer()
+		printText(tb, a.openedFilename)
+	})
+
 	a.menu.wordWrapMenuItem.Connect("activate", func() {
 		if a.menu.wordWrapMenuItem.GetActive() {
 			a.textView.WrapText(true)
