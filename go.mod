@@ -5,3 +5,5 @@ go 1.17
 require github.com/gotk3/gotk3 v0.6.3
 
 require gopkg.in/yaml.v3 v3.0.1
+
+require github.com/magefile/mage v1.15.0 // indirect
