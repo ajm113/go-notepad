@@ -8,16 +8,23 @@ Windows XP inspired notepad written in Go using GTK
 
 Prerequisits:
 
-**Anything marked with * is required.**
-
-- *Go 1.17+
-- *GTK3 Dev Libraries Installed: <https://github.com/gotk3/gotk3>
+- Go 1.17+
+- magefile: <https://magefile.org/>
 - golangci-lint: <https://github.com/golangci/golangci-lint>
 
-After Go and needed libraries are installed. You should be able to run `$ make` and see a executable.
-If not running `go build -o notepad -tags pango_1_42,gtk_3_22 .` will result the same output if you do not have Make installed for your targeted operating system.
+To build go-notepad from source:
 
-Once the executable is built you should be able to run it via `./notepad` or if you are on Windows ... `notepad.exe`.
+```bash
+git clone git@github.com:ajm113/go-notepad.git
+cd go-notepad
+mage build
+```
+This will create a binary in the `./build/` directory and may take a few minutes to compile depending on your system on for the first time.
+
+You can also run go-notepad directly from mage:
+```bash
+mage run
+```
 
 ## Config
 
@@ -52,16 +59,12 @@ Go-notepad will look for the `.notepad.yml` in the following dirs:
 
 ## TODO or Citation Needed
 
-- ~~Add time and date insert.~~
-- ~~Add Font selection dialog.~~
-- ~~Get default font size/family/type from legacy Notepad on Win XP.~~
 - Improve error/dialog messages to match Win XP Notepad.
 - Add Find/Replace
-- ~~Add Go To Line.~~
 - Add print functionality.
-- ~~Drag & drop files.~~
 - Emulate About dialog.
-- Improve makefile for crossplatform support.
+- Add undo/redo functionality.
+- ~~Improve makefile for crossplatform support.~~
 - Add GH workflows for automated deploys.
 - Add app icon and about banner image.
 
